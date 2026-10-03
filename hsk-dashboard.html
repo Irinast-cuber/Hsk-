@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK Планер | Дашборд</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --border: #e9ecef;
+    --text: #212529;
+    --text-dim: #6c757d;
+    --accent: #fd7e14;
+    --accent-light: #fff3e0;
+    --green: #2a9d8f;
+    --red: #e63946;
+    --blue: #4dabf7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--card);
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .header-meta { font-size: 12px; color: var(--text-dim); display: flex; gap: 12px; align-items: center; }
+  .header-meta span { background: var(--bg); padding: 4px 10px; border-radius: 20px; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text);
+  }
+
+  .card-title span { font-size: 12px; font-weight: 400; color: var(--text-dim); }
+
+  /* PROGRESS BAR */
+  .progress-wrap { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+  .progress-bar { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f4a261); border-radius: 4px; transition: width 0.3s; width: 0%; }
+  .progress-text { font-size: 12px; font-weight: 600; color: var(--accent); min-width: 35px; text-align: right; }
+
+  /* INPUTS */
+  input[type="text"], input[type="number"], input[type="time"], textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
+  textarea { resize: vertical; min-height: 60px; }
+
+  .row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 120px; }
+  .row label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* CHECKBOX LIST */
+  .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .task-item:last-child { border-bottom: none; }
+  .task-item input[type="checkbox"] {
+    width: 20px; height: 20px; margin-top: 2px; accent-color: var(--green); cursor: pointer; flex-shrink: 0;
+  }
+  .task-item span { font-size: 14px; color: var(--text); }
+  .task-item input:checked + span { text-decoration: line-through; color: var(--text-dim); }
+
+  /* POMODORO */
+  .pomodoro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .pomodoro-grid { grid-template-columns: 1fr; } }
+
+  .pomodoro-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .pomodoro-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px; }
+  .pomodoro-head .pomo-num { color: var(--accent); }
+  .time-row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .time-row input { width: 80px; text-align: center; padding: 6px; }
+  .time-row span { color: var(--text-dim); }
+
+  /* WEEKLY */
+  .week-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .week-grid { grid-template-columns: 1fr; } }
+  .week-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+  .week-card h4 { font-size: 13px; margin-bottom: 4px; }
+  .week-card p { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+
+  /* BUTTONS */
+  .btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+  .btn-outline:hover { background: var(--accent-light); }
+
+  /* RESET */
+  .reset-btn {
+    background: transparent; border: 1px solid var(--red); color: var(--red);
+    padding: 8px 16px; border-radius: 8px; font-size: 12px; cursor: pointer;
+    margin-top: 10px; width: 100%; font-family: inherit;
+  }
+  .reset-btn:hover { background: #ffe3e3; }
+
+  /* BADGES */
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .badge.green { background: #e6fcf5; color: var(--green); }
+  .badge.blue { background: #e7f5ff; color: var(--blue); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🍅 HSK Планер</div>
+  <div class="header-meta">
+    <span id="todayDate">—</span>
+    <span>HSK 2 → 4</span>
+    <span>Метод Помодоро</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 1. ГЛАВНАЯ ЦЕЛЬ МЕСЯЦА -->
+  <div class="card">
+    <div class="card-title">
+      🎯 Главная цель на месяц
+      <span>до июня 2027</span>
+    </div>
+    <input type="text" id="monthlyGoal" placeholder="Например: Сдать HSK 2 на 90% и уверенно говорить о погоде" style="margin-bottom:10px;">
+    <div class="row">
+      <div>
+        <label>Прогресс (%)</label>
+        <input type="number" id="monthlyProgress" min="0" max="100" placeholder="15">
+      </div>
+      <div>
+        <label>Дедлайн</label>
+        <input type="text" id="monthlyDeadline" placeholder="28.02.2027">
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="monthlyBar"></div></div>
+      <div class="progress-text" id="monthlyText">0%</div>
+    </div>
+    <textarea id="monthlyDetails" placeholder="Что нужно сделать для достижения: выучить 300 слов HSK 2, грамматика, аудирование..." style="margin-top:10px;"></textarea>
+  </div>
+
+  <!-- 2. ЦЕЛИ ПО НЕДЕЛЯМ -->
+  <div class="card">
+    <div class="card-title">📅 Еженедельные цели <span>4 недели до конца месяца</span></div>
+    <div class="week-grid">
+      <div class="week-card">
+        <h4>Неделя 1 — База</h4>
+        <p>Повторить лексику HSK 1 + начать HSK 2 (уроки 1–4)</p>
+        <div class="row" style="margin-bottom:6px;">
+          <div><label>Слов</label><input type="number" id="w1words" value="30" style="padding:4px;"></div>
+          <div><label>%</label><input type="number" id="w1progress" value="0" style="padding:4px;"></div>
+        </div>
+        <div class="progress-wrap" style="margin:0;"><div class="progress-bar"><div class="progress-fill" id="w1bar"></div></div></div>
+        <textarea id="w1reflect" placeholder="Рефлексия по неделе..." style="margin-top:6px; font-size:12px;"></textarea>
+      </div>
+      <div class="week-card">
+        <h4>Неделя 2 — Грамматика</h4>
+        <p>Освоить сравнение (比) и глаголы направления (来/去)</p>
+        <div class="row" style="margin-bottom:6px;">
+          <div><label>Слов</label><input type="number" id="w2words" value="30" style="padding:4px;"></div>
+          <div><label>%</label><input type="number" id="w2progress" value="0" style="padding:4px;"></div>
+        </div>
+        <div class="progress-wrap" style="margin:0;"><div class="progress-bar"><div class="progress-fill" id="w2bar"></div></div></div>
+        <textarea id="w2reflect" placeholder="Рефлексия по неделе..." style="margin-top:6px; font-size:12px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ЦЕЛИ НА СЕГОДНЯ -->
+  <div class="card">
+    <div class="card-title">📌 Цели на сегодня</div>
+    <div id="todayTasks">
+      <label class="task-item"><input type="checkbox" data-task="t1"><span>Выучить 12 новых слов</span></label>
+      <label class="task-item"><input type="checkbox" data-task="t2"><span>Разобрать грамматику 比 (сравнение)</span></label>
+      <label class="task-item"><input type="checkbox" data-task="t3"><span>Послушать диалог урока 1 (3 раза)</span></label>
+      <label class="task-item"><input type="checkbox" data-task="t4"><span>Прочитать диалог вслух за 2 минуты</span></label>
+    </div>
+    <button class="btn btn-outline" onclick="addTask()">+ Добавить цель на сегодня</button>
+  </div>
+
+  <!-- 4. ПОМИДОРЫ -->
+  <div class="card">
+    <div class="card-title">🍅 Помидоры <span>заполняй после каждого</span></div>
+    <div class="pomodoro-grid">
+      <div class="pomodoro-card">
+        <div class="pomodoro-head"><span>№1 (35 мин)</span><span class="pomo-num">Таймер</span></div>
+        <div class="time-row">
+          <input type="time" id="p1start" value="09:00"> <span>—</span> <input type="time" id="p1end" value="09:35">
+        </div>
+        <input type="text" id="p1task" placeholder="Тоны + 12 слов" value="Тоны + 12 слов" style="margin-bottom:6px;">
+        <textarea id="p1note" placeholder="Заметка (трудности / успехи)"></textarea>
+      </div>
+      <div class="pomodoro-card">
+        <div class="pomodoro-head"><span>№2 (35 мин)</span><span class="pomo-num">Таймер</span></div>
+        <div class="time-row">
+          <input type="time" id="p2start" value="09:45"> <span>—</span> <input type="time" id="p2end" value="10:20">
+        </div>
+        <input type="text" id="p2task" placeholder="Грамматика + 8 предложений" value="Грамматика + 8 предложений" style="margin-bottom:6px;">
+        <textarea id="p2note" placeholder="Заметка (трудности / успехи)"></textarea>
+      </div>
+      <div class="pomodoro-card">
+        <div class="pomodoro-head"><span>№3 (30 мин)</span><span class="pomo-num">Таймер</span></div>
+        <div class="time-row">
+          <input type="time" id="p3start" value="10:30"> <span>—</span> <input type="time" id="p3end" value="11:00">
+        </div>
+        <input type="text" id="p3task" placeholder="Аудирование (диалог)" value="Аудирование (диалог)" style="margin-bottom:6px;">
+        <textarea id="p3note" placeholder="Заметка (трудности / успехи)"></textarea>
+      </div>
+      <div class="pomodoro-card">
+        <div class="pomodoro-head"><span>№4 (30 мин)</span><span class="pomo-num">Таймер</span></div>
+        <div class="time-row">
+          <input type="time" id="p4start" value="11:10"> <span>—</span> <input type="time" id="p4end" value="11:40">
+        </div>
+        <input type="text" id="p4task" placeholder="Чтение вслух + карточки" value="Чтение вслух + карточки" style="margin-bottom:6px;">
+        <textarea id="p4note" placeholder="Заметка (трудности / успехи)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. ВЕЧЕРНЯЯ РЕФЛЕКСИЯ -->
+  <div class="card">
+    <div class="card-title">🌙 Вечерняя рефлексия</div>
+    <div class="row">
+      <div><label>Итог дня (одним словом)</label><input type="text" id="reflectionWord" placeholder="Продуктивно / Тяжело / Нормально"></div>
+      <div><label>Оценка за день (1–5)</label><input type="number" id="reflectionScore" min="1" max="5" placeholder="4"></div>
+    </div>
+    <div class="row">
+      <div><label>Чистое время занятий (мин)</label><input type="number" id="reflectionTime" placeholder="130"></div>
+      <div><label>Что повторить завтра</label><input type="text" id="reflectionReview" placeholder="10 раз проговорить 冷/热"></div>
+    </div>
+    <label style="font-size:11px; color:var(--text-dim); display:block; margin-top:10px; margin-bottom:4px;">Ошибки / что не получилось</label>
+    <textarea id="reflectionMistakes" placeholder="1. Путаю тоны в 冷 и 热&#10;2. Забыла слово 结束"></textarea>
+  </div>
+
+  <!-- 6. СУББОТА - ТЕСТ -->
+  <div class="card">
+    <div class="card-title">📝 Суббота — тестовый день</div>
+    <div class="row">
+      <div><label>Аудирование (из 20)</label><input type="number" id="testListening" placeholder="18"></div>
+      <div><label>Чтение (из 20)</label><input type="number" id="testReading" placeholder="16"></div>
+    </div>
+    <div class="row">
+      <div><label>Лексика (из 30)</label><input type="number" id="testVocab" placeholder="25"></div>
+      <div><label>Итог (%)</label><input type="number" id="testTotal" placeholder="85"></div>
+    </div>
+    <textarea id="testNotes" placeholder="Что далось тяжелее всего? Что повторить на следующей неделе?"></textarea>
+  </div>
+
+  <!-- 7. ВОСКРЕСЕНЬЕ - ИТОГИ -->
+  <div class="card">
+    <div class="card-title">📊 Воскресенье — итоги недели</div>
+    <div class="row">
+      <div><label>Всего новых слов за неделю</label><input type="number" id="weekTotalWords" placeholder="60"></div>
+      <div><label>Из них знаю твердо</label><input type="number" id="weekSolidWords" placeholder="45"></div>
+    </div>
+    <div class="row">
+      <div><label>Результат субботнего теста (%)</label><input type="number" id="weekTestResult" placeholder="82"></div>
+      <div><label>Самый продуктивный день</label><input type="text" id="weekBestDay" placeholder="Среда"></div>
+    </div>
+    <label style="font-size:11px; color:var(--text-dim); display:block; margin-top:10px; margin-bottom:4px;">Моя главная победа на этой неделе</label>
+    <textarea id="weekVictory" placeholder="Впервые поняла диалог без субтитров!"></textarea>
+    <label style="font-size:11px; color:var(--text-dim); display:block; margin-top:10px; margin-bottom:4px;">Что изменить на следующей неделе</label>
+    <textarea id="weekAdjust" placeholder="Добавить 10 мин аудирования каждый день..."></textarea>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">Сбросить все данные</button>
+</div>
+
+<script>
+  // ===== ВСЕ ID ЭЛЕМЕНТОВ =====
+  const ids = [
+    'monthlyGoal', 'monthlyProgress', 'monthlyDeadline', 'monthlyDetails',
+    'w1words', 'w1progress', 'w1reflect', 'w2words', 'w2progress', 'w2reflect',
+    'p1start', 'p1end', 'p1task', 'p1note',
+    'p2start', 'p2end', 'p2task', 'p2note',
+    'p3start', 'p3end', 'p3task', 'p3note',
+    'p4start', 'p4end', 'p4task', 'p4note',
+    'reflectionWord', 'reflectionScore', 'reflectionTime', 'reflectionReview', 'reflectionMistakes',
+    'testListening', 'testReading', 'testVocab', 'testTotal', 'testNotes',
+    'weekTotalWords', 'weekSolidWords', 'weekTestResult', 'weekBestDay', 'weekVictory', 'weekAdjust'
+  ];
+
+  // ===== ЗАГРУЗКА ДАННЫХ =====
+  function loadData() {
+    // Дата
+    const d = new Date();
+    document.getElementById('todayDate').textContent = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+
+    // Текстовые поля и прогресс
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const saved = localStorage.getItem('hsk_' + id);
+      if (saved !== null) el.value = saved;
+      el.addEventListener('input', () => {
+        localStorage.setItem('hsk_' + id, el.value);
+        updateProgressBars();
+      });
+    });
+
+    // Чекбоксы
+    document.querySelectorAll('#todayTasks input[type="checkbox"]').forEach(cb => {
+      const saved = localStorage.getItem('hsk_' + cb.dataset.task);
+      if (saved === 'true') cb.checked = true;
+      cb.addEventListener('change', () => {
+        localStorage.setItem('hsk_' + cb.dataset.task, cb.checked);
+      });
+    });
+
+    updateProgressBars();
+  }
+
+  // ===== ПРОГРЕСС-БАРЫ =====
+  function updateProgressBars() {
+    // Месяц
+    const mp = parseInt(document.getElementById('monthlyProgress').value) || 0;
+    document.getElementById('monthlyBar').style.width = Math.min(100, mp) + '%';
+    document.getElementById('monthlyText').textContent = mp + '%';
+
+    // Неделя 1
+    const w1 = parseInt(document.getElementById('w1progress').value) || 0;
+    document.getElementById('w1bar').style.width = Math.min(100, w1) + '%';
+
+    // Неделя 2
+    const w2 = parseInt(document.getElementById('w2progress').value) || 0;
+    document.getElementById('w2bar').style.width = Math.min(100, w2) + '%';
+  }
+
+  // ===== ДОБАВИТЬ ЗАДАЧУ =====
+  function addTask() {
+    const text = prompt('Новая задача на сегодня:');
+    if (!text) return;
+    const container = document.getElementById('todayTasks');
+    const id = 't_' + Date.now();
+    const label = document.createElement('label');
+    label.className = 'task-item';
+    label.innerHTML = `<input type="checkbox" data-task="${id}"><span>${text}</span>`;
+    container.appendChild(label);
+
+    const cb = label.querySelector('input');
+    cb.addEventListener('change', () => {
+      localStorage.setItem('hsk_' + id, cb.checked);
+    });
+  }
+
+  // ===== СБРОС =====
+  function resetAll() {
+    if (!confirm('Точно удалить все данные? Это действие нельзя отменить.')) return;
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('hsk_')) localStorage.removeItem(key);
+    });
+    location.reload();
+  }
+
+  // ===== СТАРТ =====
+  loadData();
+</script>
+
+</body>
+</html>
