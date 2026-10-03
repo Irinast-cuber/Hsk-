@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK 4 Планер | Октябрь 2026 — Июнь 2027</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --bg: #0f1115;
+    --card: #181b22;
+    --card-hover: #1f232c;
+    --border: #2a2f3a;
+    --accent: #e63946;
+    --accent-soft: #ff6b7a;
+    --gold: #f4a261;
+    --green: #2a9d8f;
+    --text: #e8eaed;
+    --text-dim: #8b93a3;
+    --text-faint: #555c6b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #1a1d24 0%, #0f1115 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .streak {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .streak .fire { font-size: 18px; }
+
+  /* NAV */
+  nav {
+    max-width: 1200px;
+    margin: 24px auto 0;
+    padding: 0 32px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  nav button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  nav button:hover { background: var(--card); color: var(--text); }
+
+  nav button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .tab { display: none; animation: fadeIn 0.3s; }
+  .tab.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  /* STATS GRID */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-value small { font-size: 14px; color: var(--text-dim); font-weight: 400; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .progress-bar {
+    height: 10px;
+    background: var(--bg);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    border-radius: 5px;
+    transition: width 0.5s;
+    width: 0%;
+  }
+
+  /* WEEK GRID */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .day-card:hover { border-color: var(--text-faint); }
+
+  .day-card.done {
+    border-color: var(--green);
+    background: linear-gradient(135deg, rgba(42,157,143,0.08), transparent);
+  }
+
+  .day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .day-badge {
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .day-badge.rest { color: var(--gold); }
+
+  /* CHECKBOXES */
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-dim);
+    transition: color 0.15s;
+  }
+
+  .task:hover { color: var(--text); }
+
+  .task input {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text-faint);
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+  }
+
+  .task input:checked {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .task input:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .task input:checked ~ span { text-decoration: line-through; opacity: 0.5; }
+
+  /* ROADMAP */
+  .roadmap-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .roadmap-item.completed {
+    border-left-color: var(--green);
+    opacity: 0.7;
+  }
+
+  .roadmap-info h3 { font-size: 16px; margin-bottom: 4px; }
+  .roadmap-info p { font-size: 13px; color: var(--text-dim); }
+
+  .roadmap-words {
+    font-family: 'SF Mono', monospace;
+    font-size: 13px;
+    color: var(--gold);
+    background: var(--bg);
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  /* TEST TRACKER */
+  .test-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .test-table th {
+    background: var(--bg);
+    padding: 14px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .test-table td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .test-table tr:hover td { background: var(--card-hover); }
+
+  .test-table input[type="number"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    width: 60px;
+    font-family: inherit;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .test-table input:focus { outline: none; border-color: var(--accent); }
+
+  .total-cell { font-weight: 600; }
+  .total-cell.good { color: var(--green); }
+  .total-cell.warn { color: var(--gold); }
+  .total-cell.bad { color: var(--accent); }
+
+  /* NOTES */
+  textarea {
+    width: 100%;
+    min-height: 160px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  textarea:focus { outline: none; border-color: var(--accent); }
+
+  /* RESOURCES */
+  .resources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .resource-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+
+  .resource-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .resource-card .emoji { font-size: 24px; margin-bottom: 12px; display: block; }
+  .resource-card h3 { font-size: 15px; margin-bottom: 6px; }
+  .resource-card p { font-size: 13px; color: var(--text-dim); }
+
+  /* RESET BUTTON */
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    margin-top: 24px;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { background: var(--accent); color: white; }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    header { padding: 16px 20px; }
+    nav { padding: 0 20px; }
+    main { padding: 20px; }
+    h1 { font-size: 24px; }
+    .header-inner { gap: 8px; }
+    .logo { font-size: 18px; }
+    .test-table { font-size: 12px; }
+    .test-table th, .test-table td { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">HSK <span>4</span> Планер</div>
+    <div class="streak">
+      <span class="fire">🔥</span>
+      <span id="streakDisplay">0 дней подряд</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" data-tab="dashboard">Дашборд</button>
+  <button data-tab="week">Неделя</button>
+  <button data-tab="roadmap">Дорожная карта</button>
+  <button data-tab="tests">Тесты</button>
+  <button data-tab="notes">Заметки</button>
+  <button data-tab="resources">Ресурсы</button>
+</nav>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <div class="tab active" id="dashboard">
+    <h1>Обзор</h1>
+    <p class="subtitle">Октябрь 2026 — Июнь 2027 · 39 недель до HSK 4</p>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Словарный запас</div>
+        <div class="stat-value" id="vocabStat">0 <small>/ 1200</small></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Задач сегодня</div>
+        <div class="stat-value" id="todayStat">0 <small>/ 0</small></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Средний балл</div>
+        <div class="stat-value" id="avgStat">— <small>/ 53</small></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Недель пройдено</div>
+        <div class="stat-value" id="weeksStat">0 <small>/ 39</small></div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-head">
+        <span>Прогресс до HSK 4</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <h2>Обновить словарный запас</h2>
+    <p class="subtitle" style="margin-bottom:12px;">Введи текущее количество выученных слов — прогресс обновится</p>
+    <input type="number" id="vocabInput" min="0" max="1200" placeholder="Например: 150"
+      style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:8px;font-family:inherit;font-size:16px;width:200px;">
+  </div>
+
+  <!-- WEEK -->
+  <div class="tab" id="week">
+    <h1>Недельный план</h1>
+    <p class="subtitle">Отмечай задачи — прогресс сохраняется автоматически</p>
+    <div class="week-grid" id="weekGrid"></div>
+    <button class="reset-btn" onclick="resetWeek()">Сбросить неделю</button>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="tab" id="roadmap">
+    <h1>Дорожная карта</h1>
+    <p class="subtitle">39 недель от нуля до HSK 4</p>
+
+    <div class="roadmap-item" data-stage="0">
+      <div class="roadmap-info">
+        <h3>Этап 0 · Пиньинь и тоны</h3>
+        <p>Октябрь 2026 · Недели 1–4 · Инициали, финали, 4 тона</p>
+      </div>
+      <div class="roadmap-words">0 слов</div>
+    </div>
+
+    <div class="roadmap-item" data-stage="1">
+      <div class="roadmap-info">
+        <h3>Этап 1 · HSK 1</h3>
+        <p>Ноябрь 2026 · Недели 5–10 · Базовая грамматика</p>
+      </div>
+      <div class="roadmap-words">150 слов</div>
+    </div>
+
+    <div class="roadmap-item" data-stage="2">
+      <div class="roadmap-info">
+        <h3>Этап 2 · HSK 2</h3>
+        <p>Декабрь 2026 — Январь 2027 · Недели 11–18 · Диалоги</p>
+      </div>
+      <div class="roadmap-words">300 слов</div>
+    </div>
+
+    <div class="roadmap-item" data-stage="3">
+      <div class="roadmap-info">
+        <h3>Этап 3 · HSK 3</h3>
+        <p>Февраль — Апрель 2027 · Недели 19–30 · Письмо, тексты</p>
+      </div>
+      <div class="roadmap-words">600 слов</div>
+    </div>
+
+    <div class="roadmap-item" data-stage="4">
+      <div class="roadmap-info">
+        <h3>Этап 4 · HSK 4</h3>
+        <p>Апрель — Июнь 2027 · Недели 31–39 · Сложные тексты</p>
+      </div>
+      <div class="roadmap-words">1200 слов</div>
+    </div>
+  </div>
+
+  <!-- TESTS -->
+  <div class="tab" id="tests">
+    <h1>Трекер тестов</h1>
+    <p class="subtitle">Каждую субботу — тест. Вводи баллы, итог считается автоматически</p>
+
+    <table class="test-table">
+      <thead>
+        <tr>
+          <th>Неделя</th>
+          <th>Лексика /30</th>
+          <th>Грамматика /8</th>
+          <th>Аудирование /5</th>
+          <th>Говорение /10</th>
+          <th>Итого</th>
+        </tr>
+      </thead>
+      <tbody id="testBody"></tbody>
+    </table>
+  </div>
+
+  <!-- NOTES -->
+  <div class="tab" id="notes">
+    <h1>Заметки</h1>
+    <p class="subtitle">Сложные иероглифы, паттерны, вопросы к репетитору</p>
+    <textarea id="notesArea" placeholder="Например:&#10;- 有点儿 vs 一点儿 — разница&#10;- 把 конструкция — не понял&#10;- Тон 3+3 → 2+3 (nǐ hǎo → ní hǎo)"></textarea>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="tab" id="resources">
+    <h1>Ресурсы</h1>
+    <p class="subtitle">Всё, что нужно для подготовки</p>
+    <div class="resources">
+      <div class="resource-card">
+        <span class="emoji">📘</span>
+        <h3>HSK Standard Course 1–4</h3>
+        <p>Основной учебник. Издательство BLCU Press.</p>
+      </div>
+      <div class="resource-card">
+        <span class="emoji">📝</span>
+        <h3>HSK Standard Course Workbook</h3>
+        <p>Рабочая тетрадь к каждому уровню.</p>
+      </div>
+      <div class="resource-card">
+        <span class="emoji">🃏</span>
+        <h3>Anki</h3>
+        <p>Колоды HSK 1–4 с интервальным повторением.</p>
+      </div>
+      <div class="resource-card">
+        <span class="emoji">🎧</span>
+        <h3>HSK Mock</h3>
+        <p>Тренировка экзаменационного формата.</p>
+      </div>
+      <div class="resource-card">
+        <span class="emoji">📖</span>
+        <h3>Chinese Grammar Wiki</h3>
+        <p>Справочник по грамматике с примерами.</p>
+      </div>
+      <div class="resource-card">
+        <span class="emoji">🗣️</span>
+        <h3>Pinyin Trainer</h3>
+        <p>Тренажёр тонов и произношения.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===== ДАННЫЕ НЕДЕЛИ =====
+const WEEK_DATA = [
+  { day: 'Понедельник', badge: '', tasks: ['Anki: 15 мин повторение', 'Новые слова: 15 шт', 'Грамматика: паттерн недели', 'Аудирование: 15 мин'] },
+  { day: 'Вторник', badge: '', tasks: ['Anki: 15 мин', 'Упражнения на грамматику: 5 шт', 'Чтение вслух: 15 мин'] },
+  { day: 'Среда', badge: '', tasks: ['Anki: 15 мин', 'Новые слова: 15 шт', 'Диалог из учебника: разбор + повтор'] },
+  { day: 'Четверг', badge: '', tasks: ['Anki: 15 мин', 'Аудирование: 15 мин', 'Прописи иероглифов: 30 мин'] },
+  { day: 'Пятница', badge: '', tasks: ['Anki: 15 мин', 'Новые слова: 15 шт', 'Грамматика: паттерн недели', 'Мини-диалог: 10 предложений'] },
+  { day: 'Суббота', badge: 'ТЕСТ', tasks: ['ТЕСТ НЕДЕЛИ: лексика (20+10)', 'Тест: грамматика (8 предл.)', 'Тест: аудирование (1 диалог)', 'Тест: говорение (запись)', 'Разбор ошибок: 30 мин'] },
+  { day: 'Воскресенье', badge: 'ОТДЫХ', tasks: ['Аудирование (подкаст/песня): 30 мин', 'Чтение вслух: 15 мин', 'Отдых: обязательно'] },
+];
+
+// ===== STATE =====
+const state = {
+  tasks: JSON.parse(localStorage.getItem('hsk_tasks') || '{}'),
+  tests: JSON.parse(localStorage.getItem('hsk_tests') || '{}'),
+  notes: localStorage.getItem('hsk_notes') || '',
+  vocab: parseInt(localStorage.getItem('hsk_vocab') || '0'),
+  lastVisit: localStorage.getItem('hsk_last_visit') || '',
+  streak: parseInt(localStorage.getItem('hsk_streak') || '0'),
+};
+
+function save() {
+  localStorage.setItem('hsk_tasks', JSON.stringify(state.tasks));
+  localStorage.setItem('hsk_tests', JSON.stringify(state.tests));
+  localStorage.setItem('hsk_notes', state.notes);
+  localStorage.setItem('hsk_vocab', state.vocab);
+  localStorage.setItem('hsk_last_visit', state.lastVisit);
+  localStorage.setItem('hsk_streak', state.streak);
+}
+
+// ===== СТРИК =====
+function updateStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+  if (state.lastVisit === today) return;
+  if (state.lastVisit === yesterday) state.streak += 1;
+  else if (state.lastVisit !== today) state.streak = 1;
+
+  state.lastVisit = today;
+  save();
+}
+
+// ===== РЕНДЕР НЕДЕЛИ =====
+function renderWeek() {
+  const grid = document.getElementById('weekGrid');
+  const todayIdx = (new Date().getDay() + 6) % 7; // Пн=0
+  grid.innerHTML = '';
+
+  WEEK_DATA.forEach((day, dIdx) => {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+
+    const allDone = day.tasks.every((_, tIdx) => state.tasks[`${dIdx}-${tIdx}`]);
+    if (allDone) card.classList.add('done');
+
+    const isRest = day.badge === 'ОТДЫХ';
+    const isTest = day.badge === 'ТЕСТ';
+
+    card.innerHTML = `
+      <div class="day-head">
+        <span class="day-name">${day.day}</span>
+        <span class="day-badge ${isRest ? 'rest' : ''}" style="${isTest ? 'color:var(--accent);' : ''}">${day.badge || (dIdx === todayIdx ? 'СЕГОДНЯ' : '')}</span>
+      </div>
+    `;
+
+    day.tasks.forEach((task, tIdx) => {
+      const label = document.createElement('label');
+      label.className = 'task';
+      const checked = state.tasks[`${dIdx}-${tIdx}`] ? 'checked' : '';
+      label.innerHTML = `<input type="checkbox" ${checked} data-key="${dIdx}-${tIdx}"><span>${task}</span>`;
+      card.appendChild(label);
+    });
+
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', e => {
+      const key = e.target.dataset.key;
+      if (e.target.checked) state.tasks[key] = true;
+      else delete state.tasks[key];
+      save();
+      renderWeek();
+      updateDashboard();
+    });
+  });
+}
+
+// ===== РЕНДЕР ТЕСТОВ =====
+function renderTests() {
+  const tbody = document.getElementById('testBody');
+  tbody.innerHTML = '';
+  for (let w = 1; w <= 39; w++) {
+    const t = state.tests[w] || {};
+    const total = (t.vocab||0) + (t.gram||0) + (t.listen||0) + (t.speak||0);
+    const cls = total >= 42 ? 'good' : total >= 32 ? 'warn' : total > 0 ? 'bad' : '';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${w}</strong></td>
+      <td><input type="number" min="0" max="30" data-w="${w}" data-field="vocab" value="${t.vocab ?? ''}"></td>
+      <td><input type="number" min="0" max="8" data-w="${w}" data-field="gram" value="${t.gram ?? ''}"></td>
+      <td><input type="number" min="0" max="5" data-w="${w}" data-field="listen" value="${t.listen ?? ''}"></td>
+      <td><input type="number" min="0" max="10" data-w="${w}" data-field="speak" value="${t.speak ?? ''}"></td>
+      <td class="total-cell ${cls}">${total || '—'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  tbody.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const w = e.target.dataset.w;
+      const f = e.target.dataset.field;
+      state.tests[w] = state.tests[w] || {};
+      state.tests[w][f] = parseInt(e.target.value) || 0;
+      save();
+      renderTests();
+      updateDashboard();
+    });
+  });
+}
+
+// ===== ДАШБОРД =====
+function updateDashboard() {
+  // словарь
+  document.getElementById('vocabStat').innerHTML = `${state.vocab} <small>/ 1200</small>`;
+  document.getElementById('vocabInput').value = state.vocab;
+
+  // сегодня
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const todayTasks = WEEK_DATA[todayIdx].tasks;
+  const doneToday = todayTasks.filter((_, i) => state.tasks[`${todayIdx}-${i}`]).length;
+  document.getElementById('todayStat').innerHTML = `${doneToday} <small>/ ${todayTasks.length}</small>`;
+
+  // средний балл
+  const totals = Object.values(state.tests).map(t => (t.vocab||0)+(t.gram||0)+(t.listen||0)+(t.speak||0)).filter(x => x > 0);
+  const avg = totals.length ? Math.round(totals.reduce((a,b)=>a+b,0) / totals.length) : 0;
+  document.getElementById('avgStat').innerHTML = `${avg || '—'} <small>/ 53</small>`;
+
+  // недели
+  const weeksDone = Math.floor(state.vocab / 40); // ~40 слов/неделя
+  document.getElementById('weeksStat').innerHTML = `${weeksDone} <small>/ 39</small>`;
+
+  // прогресс
+  const pct = Math.min(100, Math.round((state.vocab / 1200) * 100));
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // стрик
+  document.getElementById('streakDisplay').textContent = `${state.streak} ${plural(state.streak, 'день', 'дня', 'дней')} подряд`;
+
+  // roadmap
+  document.querySelectorAll('.roadmap-item').forEach(el => {
+    const stageVocab = [0, 150, 300, 600, 1200][parseInt(el.dataset.stage)];
+    if (state.vocab >= stageVocab && stageVocab > 0) el.classList.add('completed');
+    else el.classList.remove('completed');
+  });
+}
+
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
+
+// ===== НАВИГАЦИЯ =====
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ===== RESET =====
+function resetWeek() {
+  if (!confirm('Сбросить все отметки за неделю?')) return;
+  state.tasks = {};
+  save();
+  renderWeek();
+  updateDashboard();
+}
+
+// ===== ВВОД СЛОВ =====
+document.getElementById('vocabInput').addEventListener('input', e => {
+  state.vocab = Math.min(1200, parseInt(e.target.value) || 0);
+  save();
+  updateDashboard();
+});
+
+// ===== ЗАМЕТКИ =====
+const notesArea = document.getElementById('notesArea');
+notesArea.value = state.notes;
+notesArea.addEventListener('input', e => {
+  state.notes = e.target.value;
+  save();
+});
+
+// ===== INIT =====
+updateStreak();
+renderWeek();
+renderTests();
+updateDashboard();
+</script>
+
+</body>
+      </html>
